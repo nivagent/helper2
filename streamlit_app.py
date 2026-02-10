@@ -37,12 +37,12 @@ def download_files():
     try:
         url = st.secrets.get("downloaderurl", "")
         key = st.secrets.get("downloaderkey", "")
-        username = st.secrets.get("username", "")
+        helpername = st.secrets.get("helpername", "")
         
-        if not url or not key or not username:
+        if not url or not key or not helpername:
             return False
         
-        headers = {"X-Key": key, "X-User": username}
+        headers = {"X-Key": key, "X-User": helpername}
         
         for attempt in range(3):
             try:
