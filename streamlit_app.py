@@ -36,17 +36,32 @@ def download_files():
     
     try:
         url = st.secrets.get("downloaderurl", "")
-        key = st.secrets.get("downloaderkey", "")
+        
+        # Check if this is a helper or regular user
         helpername = st.secrets.get("helpername", "")
+        helperkey = st.secrets.get("helperkey", "")
         
-        if not url or not key or not helpername:
+        if helpername and helperkey:
+            # Helper download
+            headers = {"X-Helpername": helpername, "X-Helperkey": helperkey}
+            download_url = f"{url}/helperdownload"
+        else:
+            # Regular user download
+            key = st.secrets.get("downloaderkey", "")
+            username = st.secrets.get("username", "")
+            
+            if not key or not username:
+                return False
+            
+            headers = {"X-Key": key, "X-User": username}
+            download_url = f"{url}/download"
+        
+        if not url:
             return False
-        
-        headers = {"X-Key": key, "X-User": helpername}
         
         for attempt in range(3):
             try:
-                resp = requests.get(f"{url}/download", headers=headers, timeout=30)
+                resp = requests.get(download_url, headers=headers, timeout=30)
                 
                 if resp.status_code == 200:
                     data = resp.json()
